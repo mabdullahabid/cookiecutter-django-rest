@@ -1,15 +1,22 @@
+# Pull base image
 FROM python:3.8
+
+# Set environment variables
 ENV PYTHONUNBUFFERED 1
 
-# Allows docker to cache installed dependencies between builds
-COPY ./requirements.txt requirements.txt
-RUN pip install -r requirements.txt
+# Set work directory
+WORKDIR /code
 
-# Adds our application code to the image
+# Install dependencies
+COPY ./Pipfile Pipfile
+COPY ./Pipfile.lock Pipfile.lock
+RUN pip install pipenv && pipenv install --system
+
+# Copy project
 COPY . code
-WORKDIR code
 
+# Expose port
 EXPOSE 8000
 
 # Run the production server
-CMD newrelic-admin run-program gunicorn --bind 0.0.0.0:$PORT --access-logfile - {{cookiecutter.app_name}}.wsgi:application
+CMD newrelic-admin run-program gunicorn --bind 0.0.0.0:$PORT --access-logfile - dost_backend.wsgi:application
