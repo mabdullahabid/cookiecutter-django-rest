@@ -30,6 +30,13 @@ You need to make a scalable api on a deadline. You deeply care about the quality
 - Always current dependencies and security updates enforced by [pyup.io](https://pyup.io/).
 - A slim but robust foundation -- just enough to maximize your productivity, nothing more.
 
+## Additions by @mabdullahabid
+- Pipenv
+- local.yml and prod.yml for local development and production deployment
+- Updated .env.example
+- Adding nginx-proxy and lets encrypt auto generated certificates
+- Updated cookiecutter variables
+
 ## Quick Start
 
 Install [cookiecutter](https://github.com/audreyr/cookiecutter):
