@@ -1,0 +1,61 @@
+version: '2'
+
+services:
+  postgres:
+    image: postgres:13-alpine
+    env_file:
+      - .env
+    ports:
+      - 5432:5432
+    volumes:
+      - ./dumps:/dumps
+  web:
+    restart: always
+    env_file:
+      - .env
+    image: web
+    build: ./
+    entrypoint: ./docker/web/entrypoint.sh
+    command: newrelic-admin run-program gunicorn --bind 0.0.0.0:8000 --access-logfile - {{ cookiecutter.app_name }}.wsgi:application
+    volumes:
+      - ./:/code
+      - static_volume:/code/static
+      - media_volume:/code/media
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+  nginx-proxy:
+      container_name: nginx-proxy
+      build: docker/nginx
+      restart: always
+      ports:
+        - 443:443
+        - 80:80
+      volumes:
+        - static_volume:/code/static
+        - media_volume:/code/media
+        - certs:/etc/nginx/certs
+        - html:/usr/share/nginx/html
+        - vhost:/etc/nginx/vhost.d
+        - /var/run/docker.sock:/tmp/docker.sock:ro
+      depends_on:
+        - web
+  nginx-proxy-letsencrypt:
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    environment:
+    env_file:
+      - .env
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - certs:/etc/nginx/certs
+      - html:/usr/share/nginx/html
+      - vhost:/etc/nginx/vhost.d
+    depends_on:
+      - nginx-proxy
+volumes:
+  static_volume:
+  media_volume:
+  certs:
+  html:
+  vhost:
