@@ -36,6 +36,7 @@ You need to make a scalable api on a deadline. You deeply care about the quality
 - Updated .env.example
 - Adding nginx-proxy and lets encrypt auto generated certificates
 - Updated cookiecutter variables
+- Using PostgreSQL 13-alpine
 
 ## Quick Start
 
